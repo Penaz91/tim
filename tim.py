@@ -40,7 +40,8 @@ def start_activity(data, activity):
             "creation_time": datetime.now(),
             "last_active": datetime.now(),
             "activation_time": datetime.now(),
-            "elapsed_time": timedelta(0)
+            "elapsed_time": timedelta(0),
+            "sessions": []
         }
 
 
@@ -51,6 +52,10 @@ def stop_activity(data, activity):
         stop_time = datetime.now()
         delta = stop_time - start_time
         data[activity]["elapsed_time"] += delta
+        data[activity]["sessions"].append({
+            "date": datetime.today(),
+            "elapsed": delta
+        })
         del start_time
         del data[activity]["activation_time"]
     else:
@@ -71,13 +76,14 @@ def delete_activity(data, activity):
 def reset_activity(data, activity):
     if activity in data:
         data[activity]["elapsed_time"] = timedelta(0)
+        data[activity]["sessions"] = []
         print("Activity {} reset".format(activity))
     else:
         print("Activity {} does not exist".format(activity))
         quit()
 
 
-def activity_stats(data, activity):
+def activity_stats(data, activity, detail=True):
     if activity in data:
         print("Name: {}".format(activity))
         status = "Inactive"
@@ -87,6 +93,11 @@ def activity_stats(data, activity):
         print("Elapsed Time: {}".format(data[activity]["elapsed_time"]))
         print("Created on: {}".format(data[activity]["creation_time"]))
         print("Last Activity: {}".format(data[activity]["last_active"]))
+        if detail:
+            print("Sessions:")
+            for session in data[activity]["sessions"]:
+                print("Date: {} - Duration: {}".format(session["date"],
+                                                       session["elapsed"]))
     else:
         print("Activity {} does not exist".format(activity))
         quit()
@@ -130,7 +141,7 @@ def print_program_info():
     Prints the program info
     """
     print("Tim - A simple and bare-bones time tracker")
-    print("Version 0.1")
+    print("Version 0.2")
     print("------------------------------------------")
 
 
@@ -157,7 +168,7 @@ def show_all_stats():
         print("No Statistics to show")
     else:
         for activity in data:
-            activity_stats(data, activity)
+            activity_stats(data, activity, False)
             print("------------------------------")
 
 
