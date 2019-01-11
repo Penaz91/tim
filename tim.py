@@ -48,6 +48,9 @@ def start_activity(data, activity):
 def stop_activity(data, activity):
     if activity in data:
         # Activity exists
+        if "activation_time" not in data[activity]:
+            print("Activity {} already stopped".format(activity))
+            quit()
         start_time = data[activity]["activation_time"]
         stop_time = datetime.now()
         delta = stop_time - start_time
